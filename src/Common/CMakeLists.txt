@@ -7,26 +7,28 @@ add_library(CemuCommon ${CPP_FILES} ${H_FILES})
 set_property(TARGET CemuCommon PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if(WIN32)
-target_sources(CemuCommon
-PRIVATE
-    windows/platform.cpp
-    windows/platform.h
-)
+	target_sources(CemuCommon PRIVATE
+		windows/platform.cpp
+		windows/platform.h
+	)
 else()
-target_sources(CemuCommon
-PRIVATE
-    unix/platform.cpp
-    unix/platform.h
-)
+	target_sources(CemuCommon PRIVATE
+		unix/platform.cpp
+		unix/platform.h
+	)
 endif()
 
-target_sources(CemuCommon
-        PRIVATE
-        ExceptionHandler/ExceptionHandler.cpp
-        ExceptionHandler/ExceptionHandler.h
-        )
+target_sources(CemuCommon PRIVATE
+	ExceptionHandler/ExceptionHandler.cpp
+	ExceptionHandler/ExceptionHandler.h
+)
 
+# Caveats:
+# - On Clang, precompiled headers and compilation units using them have to be
+#   compiled with the same set of CPU extensions (e.g. -mavx2), and they all
+#   have to either link or avoid linking to pthreads.
 target_precompile_headers(CemuCommon PUBLIC precompiled.h)
+
 target_include_directories(CemuCommon PUBLIC "../")
 
 target_link_libraries(CemuCommon PRIVATE
